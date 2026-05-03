@@ -157,7 +157,7 @@ export default function Skills() {
             }}
           >
             <img
-              src="/images/me1.jpeg"
+              src="/images/me2.jpeg"
               alt="Ousmane Diallo"
               style={{
                 width: '100%',

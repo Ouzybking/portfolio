@@ -109,30 +109,25 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* RIGHT — VIDEO UNIQUE */}
+      {/* RIGHT — IMAGE */}
       <div
         style={{
           position: 'relative',
           borderRadius: '18px',
           overflow: 'hidden',
-
-          /* ⭐ grand format Hero */
-          
-
           border: '0.5px solid rgba(255,255,255,0.07)',
-          boxShadow: '0 20px 60px rgba(211, 192, 192, 0.4)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
         }}
       >
-        <video
-          src="/videos/moi.mp4" // 👈 CORRIGÉ (IMPORTANT)
-          autoPlay
-          muted
-          loop
-          playsInline
+        {/* IMAGE */}
+        <img
+          src="/images/me1.jpeg"   // 👈 mets ton image ici (ou .png)
+          alt="Ousmane Diallo"
           style={{
             width: '100%',
-            height: '70%',
-            
+            height: '90%',
+            objectFit: 'cover',
+            display: 'block',
           }}
         />
 
@@ -162,10 +157,10 @@ export default function Hero() {
               fontFamily: 'Syne, sans-serif',
             }}
           >
-            Showreel 2025
+            Portfolio 2025
           </p>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>
-            Motion Design · Vidéo
+            Motion Design · Vidéo · Design
           </p>
         </div>
       </div>
