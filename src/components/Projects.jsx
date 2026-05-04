@@ -36,23 +36,9 @@ const projects = [
     desc: 'Animations 2D et transitions cinématographiques.',
     youtube: 'https://www.youtube.com/embed/je34dtK-AP0',
   },
-  {
-    id: 3,
-    title: 'Projet Vidéo Corporate',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/tN5mT5Da92w',
-  },
-  {
-    id: 4,
-    title: 'Projet Vidéo Corporate',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/goBCKku1M8o',
-  },
 ];
 
-// ─── Hook breakpoint ─────────────────────────────────────────
+// ─── breakpoint ─────────────────────────
 function useBreakpoint() {
   const [width, setWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -67,7 +53,6 @@ function useBreakpoint() {
   return {
     isMobile: width < 640,
     isTablet: width >= 640 && width < 1024,
-    isDesktop: width >= 1024,
   };
 }
 
@@ -78,15 +63,11 @@ export default function Projects() {
   const photoPaused = useRef(false);
   const designPaused = useRef(false);
 
-  const isDown = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-
   const [selectedImage, setSelectedImage] = useState(null);
 
   const { isMobile, isTablet } = useBreakpoint();
 
-  // ─── AUTO SCROLL PHOTOS ─────────────────────────────
+  // ─── auto scroll photos ─────────────────
   useEffect(() => {
     const el = scrollRef.current;
     const id = setInterval(() => {
@@ -97,7 +78,7 @@ export default function Projects() {
     return () => clearInterval(id);
   }, []);
 
-  // ─── AUTO SCROLL DESIGN ─────────────────────────────
+  // ─── auto scroll design ─────────────────
   useEffect(() => {
     const el = designRef.current;
     const id = setInterval(() => {
@@ -108,38 +89,18 @@ export default function Projects() {
     return () => clearInterval(id);
   }, []);
 
-  // ─── DRAG CONTROLS ─────────────────────────────
-  const handleMouseDown = (e, ref) => {
-    isDown.current = true;
-    startX.current = e.pageX - ref.current.offsetLeft;
-    scrollLeft.current = ref.current.scrollLeft;
+  // ─── scroll buttons ─────────────────
+  const scroll = (ref, direction) => {
+    if (!ref.current) return;
+    const amount = isMobile ? 250 : 400;
+    ref.current.scrollBy({
+      left: direction === 'left' ? -amount : amount,
+      behavior: 'smooth',
+    });
   };
 
-  const handleMouseUp = () => {
-    isDown.current = false;
-  };
-
-  const handleMouseLeave = () => {
-    isDown.current = false;
-  };
-
-  const handleMouseMove = (e, ref) => {
-    if (!isDown.current) return;
-    e.preventDefault();
-    const x = e.pageX - ref.current.offsetLeft;
-    const walk = (x - startX.current) * 2;
-    ref.current.scrollLeft = scrollLeft.current - walk;
-  };
-
-  const sectionPad = isMobile ? '72px 16px' : isTablet ? '80px 28px' : '96px 48px';
+  const sectionPad = isMobile ? '72px 16px' : '96px 48px';
   const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
-  const gridGap = isMobile ? '12px' : '16px';
-  const sectionGap = isMobile ? '60px' : '80px';
-
-  const designW = isMobile ? '240px' : '320px';
-  const designH = isMobile ? '300px' : '400px';
-  const photoW = isMobile ? '220px' : '280px';
-  const photoH = isMobile ? '280px' : '360px';
 
   const h2 = {
     color: '#f0eee8',
@@ -152,13 +113,32 @@ export default function Projects() {
   const carouselWrap = {
     display: 'flex',
     gap: '12px',
-    overflow: 'hidden',
+    overflowX: 'auto',
+    scrollBehavior: 'smooth',
     marginTop: '20px',
-    cursor: 'grab',
+    scrollbarWidth: 'none',
+  };
+
+  const arrowBtn = {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'rgba(0,0,0,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    color: 'white',
+    width: '38px',
+    height: '38px',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    zIndex: 5,
+  };
+
+  const wrapper = {
+    position: 'relative',
   };
 
   return (
-    <section id="projects" style={{ padding: sectionPad }}>
+    <section style={{ padding: sectionPad }}>
 
       {/* ===== LIGHTBOX ===== */}
       {selectedImage && (
@@ -172,31 +152,31 @@ export default function Projects() {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 9999,
-            cursor: 'zoom-out',
           }}
         >
           <img
             src={selectedImage}
-            alt="preview"
-            style={{
-              maxWidth: '90%',
-              maxHeight: '90%',
-              borderRadius: '12px',
-            }}
+            style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: 12 }}
           />
         </div>
       )}
 
-      <h2 style={h2}>Projets Motion et Montage vidéo</h2>
+      <h2 style={h2}>Projets Motion</h2>
 
       {/* ===== VIDEOS ===== */}
-      <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: gridGap }}>
-        {projects.map((proj) => (
-          <div key={proj.id} style={{ borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 16 }}>
+        {projects.map((p) => (
+          <div key={p.id} style={{ borderRadius: 12, overflow: 'hidden' }}>
             <div style={{ position: 'relative', paddingTop: '56.25%' }}>
               <iframe
-                src={proj.youtube}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+                src={p.youtube}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
                 allowFullScreen
               />
             </div>
@@ -205,52 +185,88 @@ export default function Projects() {
       </div>
 
       {/* ===== DESIGN ===== */}
-      <h2 style={{ ...h2, marginTop: sectionGap }}>Design Graphique</h2>
+      <h2 style={{ ...h2, marginTop: 80 }}>Design Graphique</h2>
 
-      <div
-        ref={designRef}
-        style={carouselWrap}
-        onMouseDown={(e) => handleMouseDown(e, designRef)}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={() => {
-          designPaused.current = false;
-          handleMouseLeave();
-        }}
-        onMouseMove={(e) => handleMouseMove(e, designRef)}
-      >
-        {[...designPhotos, ...designPhotos].map((img, i) => (
-          <div key={i} style={{ minWidth: designW, height: designH }}>
-            <img
-              src={img}
-              onClick={() => setSelectedImage(img)}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }}
-            />
-          </div>
-        ))}
+      <div style={wrapper}>
+        <button
+          onClick={() => scroll(designRef, 'left')}
+          style={{ ...arrowBtn, left: 10 }}
+        >
+          ‹
+        </button>
+
+        <div
+          ref={designRef}
+          style={carouselWrap}
+          onMouseEnter={() => (designPaused.current = true)}
+          onMouseLeave={() => (designPaused.current = false)}
+        >
+          {[...designPhotos, ...designPhotos].map((img, i) => (
+            <div key={i} style={{ minWidth: isMobile ? 240 : 320, height: 380 }}>
+              <img
+                src={img}
+                onClick={() => setSelectedImage(img)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  cursor: 'zoom-in',
+                  borderRadius: 12,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={() => scroll(designRef, 'right')}
+          style={{ ...arrowBtn, right: 10 }}
+        >
+          ›
+        </button>
       </div>
 
       {/* ===== PHOTOS ===== */}
-      <h2 style={{ ...h2, marginTop: sectionGap }}>Photographie</h2>
+      <h2 style={{ ...h2, marginTop: 80 }}>Photographie</h2>
 
-      <div
-        ref={scrollRef}
-        style={carouselWrap}
-        onMouseDown={(e) => handleMouseDown(e, scrollRef)}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onMouseMove={(e) => handleMouseMove(e, scrollRef)}
-      >
-        {[...photos, ...photos].map((img, i) => (
-          <div key={i} style={{ minWidth: photoW, height: photoH }}>
-            <img
-              src={img}
-              onClick={() => setSelectedImage(img)}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }}
-            />
-          </div>
-        ))}
+      <div style={wrapper}>
+        <button
+          onClick={() => scroll(scrollRef, 'left')}
+          style={{ ...arrowBtn, left: 10 }}
+        >
+          ‹
+        </button>
+
+        <div
+          ref={scrollRef}
+          style={carouselWrap}
+          onMouseEnter={() => (photoPaused.current = true)}
+          onMouseLeave={() => (photoPaused.current = false)}
+        >
+          {[...photos, ...photos].map((img, i) => (
+            <div key={i} style={{ minWidth: isMobile ? 220 : 280, height: 360 }}>
+              <img
+                src={img}
+                onClick={() => setSelectedImage(img)}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  cursor: 'zoom-in',
+                  borderRadius: 12,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={() => scroll(scrollRef, 'right')}
+          style={{ ...arrowBtn, right: 10 }}
+        >
+          ›
+        </button>
       </div>
-
     </section>
   );
 }
