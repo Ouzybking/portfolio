@@ -50,67 +50,20 @@ const projects = [
     desc: 'Film corporate tournage et montage.',
     youtube: 'https://www.youtube.com/embed/goBCKku1M8o',
   },
-  {
-    id: 5,
-    title: 'Projet Vidéo Corporate',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/7YAxV5OrVas',
-  },
-  {
-    id: 6,
-    title: 'Projet Vidéo Corporate',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/smDNXdkAnBk',
-  },
-  {
-    id: 7,
-    title: 'Projet Vidéo Corporate',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/n8uZY8mSMQM',
-  },
-  {
-    id: 8,
-    title: 'Projet Vidéo Corporate',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/vrzXZhgFGWk',
-  },
-  {
-    id: 9,
-    title: "L'IA, outil ou dépendance ?",
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/045ecCwpcoo',
-  },
-  {
-    id: 10,
-    title: 'Intelligence artificielle : opportunités',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/ZEw0DN_7wZY',
-  },
-  {
-    id: 11,
-    title: '🔥Ambiance incroyable au monument de la renaissance Finale Sénégal 🇸🇳 vs Maroc 🇲🇦',
-    category: 'Vidéo',
-    desc: 'Film corporate tournage et montage.',
-    youtube: 'https://www.youtube.com/embed/3uzhgcpPKsI',
-  },
 ];
 
-// ─── Hook breakpoint ───────────────────────────────────────────────────────────
+// ─── Hook breakpoint ─────────────────────────────────────────
 function useBreakpoint() {
   const [width, setWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
+
   useEffect(() => {
     const handler = () => setWidth(window.innerWidth);
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
+
   return {
     isMobile: width < 640,
     isTablet: width >= 640 && width < 1024,
@@ -119,13 +72,21 @@ function useBreakpoint() {
 }
 
 export default function Projects() {
-  const scrollRef  = useRef(null);
-  const designRef  = useRef(null);
-  const photoPaused  = useRef(false);
+  const scrollRef = useRef(null);
+  const designRef = useRef(null);
+
+  const photoPaused = useRef(false);
   const designPaused = useRef(false);
+
+  const isDown = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const { isMobile, isTablet } = useBreakpoint();
 
-  // ─── Auto-scroll infini photos ────────────────────────────────────────────
+  // ─── AUTO SCROLL PHOTOS ─────────────────────────────
   useEffect(() => {
     const el = scrollRef.current;
     const id = setInterval(() => {
@@ -136,7 +97,7 @@ export default function Projects() {
     return () => clearInterval(id);
   }, []);
 
-  // ─── Auto-scroll infini design ────────────────────────────────────────────
+  // ─── AUTO SCROLL DESIGN ─────────────────────────────
   useEffect(() => {
     const el = designRef.current;
     const id = setInterval(() => {
@@ -147,24 +108,44 @@ export default function Projects() {
     return () => clearInterval(id);
   }, []);
 
-  // ─── Valeurs responsives ──────────────────────────────────────────────────
-  const sectionPad   = isMobile ? '72px 16px' : isTablet ? '80px 28px' : '96px 48px';
-  const gridCols     = isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
-  const gridGap      = isMobile ? '12px' : '16px';
-  const sectionGap   = isMobile ? '60px' : '80px';
+  // ─── DRAG CONTROLS ─────────────────────────────
+  const handleMouseDown = (e, ref) => {
+    isDown.current = true;
+    startX.current = e.pageX - ref.current.offsetLeft;
+    scrollLeft.current = ref.current.scrollLeft;
+  };
 
-  // Carrousels
-  const designW  = isMobile ? '240px' : '320px';
-  const designH  = isMobile ? '300px' : '400px';
-  const photoW   = isMobile ? '220px' : '280px';
-  const photoH   = isMobile ? '280px' : '360px';
+  const handleMouseUp = () => {
+    isDown.current = false;
+  };
+
+  const handleMouseLeave = () => {
+    isDown.current = false;
+  };
+
+  const handleMouseMove = (e, ref) => {
+    if (!isDown.current) return;
+    e.preventDefault();
+    const x = e.pageX - ref.current.offsetLeft;
+    const walk = (x - startX.current) * 2;
+    ref.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  const sectionPad = isMobile ? '72px 16px' : isTablet ? '80px 28px' : '96px 48px';
+  const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
+  const gridGap = isMobile ? '12px' : '16px';
+  const sectionGap = isMobile ? '60px' : '80px';
+
+  const designW = isMobile ? '240px' : '320px';
+  const designH = isMobile ? '300px' : '400px';
+  const photoW = isMobile ? '220px' : '280px';
+  const photoH = isMobile ? '280px' : '360px';
 
   const h2 = {
     color: '#f0eee8',
     fontFamily: 'Syne, sans-serif',
     fontWeight: 700,
     fontSize: isMobile ? '20px' : '26px',
-    letterSpacing: '-0.5px',
     marginBottom: '24px',
   };
 
@@ -174,135 +155,97 @@ export default function Projects() {
     overflow: 'hidden',
     marginTop: '20px',
     cursor: 'grab',
-    WebkitOverflowScrolling: 'touch',
   };
 
   return (
     <section id="projects" style={{ padding: sectionPad }}>
 
-      {/* Label */}
-      <p style={{
-        fontSize: '11px', letterSpacing: '3px', color: '#ff4d1c',
-        textTransform: 'uppercase', marginBottom: '10px',
-      }}>
-        Réalisations
-      </p>
+      {/* ===== LIGHTBOX ===== */}
+      {selectedImage && (
+        <div
+          onClick={() => setSelectedImage(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            cursor: 'zoom-out',
+          }}
+        >
+          <img
+            src={selectedImage}
+            alt="preview"
+            style={{
+              maxWidth: '90%',
+              maxHeight: '90%',
+              borderRadius: '12px',
+            }}
+          />
+        </div>
+      )}
 
-      {/* ══════════ VIDÉO / MOTION ══════════ */}
       <h2 style={h2}>Projets Motion et Montage vidéo</h2>
 
+      {/* ===== VIDEOS ===== */}
       <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: gridGap }}>
-        {projects.map((proj, idx) => (
-          <div
-            key={`${proj.id}-${idx}`}
-            style={{
-              border: '0.5px solid rgba(255,255,255,0.1)',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.02)',
-              transition: 'border-color 0.2s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,77,28,0.4)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
-          >
-            {/* Ratio 16:9 natif */}
-            <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+        {projects.map((proj) => (
+          <div key={proj.id} style={{ borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ position: 'relative', paddingTop: '56.25%' }}>
               <iframe
                 src={proj.youtube}
-                title={proj.title}
-                style={{
-                  position: 'absolute', top: 0, left: 0,
-                  width: '100%', height: '100%', border: 'none',
-                }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
                 allowFullScreen
               />
-            </div>
-
-            <div style={{ padding: isMobile ? '12px 14px' : '16px 18px' }}>
-              <span style={{
-                fontSize: '10px', color: '#ff8a65',
-                background: 'rgba(255,77,28,0.1)',
-                border: '0.5px solid rgba(255,77,28,0.25)',
-                borderRadius: '3px', padding: '2px 8px',
-                display: 'inline-block', marginBottom: '8px',
-              }}>
-                {proj.category}
-              </span>
-              <h3 style={{
-                color: '#f0eee8', fontFamily: 'Syne, sans-serif',
-                fontWeight: 700, fontSize: isMobile ? '13px' : '15px',
-                lineHeight: 1.4, marginBottom: '4px',
-              }}>
-                {proj.title}
-              </h3>
-              <p style={{
-                color: 'rgba(240,238,232,0.4)',
-                fontSize: isMobile ? '12px' : '13px',
-                lineHeight: 1.5,
-              }}>
-                {proj.desc}
-              </p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ══════════ DESIGN GRAPHIQUE ══════════ */}
-      <h2 style={{ ...h2, marginTop: sectionGap }}>Projet Design Graphique</h2>
+      {/* ===== DESIGN ===== */}
+      <h2 style={{ ...h2, marginTop: sectionGap }}>Design Graphique</h2>
 
       <div
         ref={designRef}
         style={carouselWrap}
-        onMouseEnter={() => (designPaused.current = true)}
-        onMouseLeave={() => (designPaused.current = false)}
-        onTouchStart={() => (designPaused.current = true)}
-        onTouchEnd={() => setTimeout(() => (designPaused.current = false), 2000)}
+        onMouseDown={(e) => handleMouseDown(e, designRef)}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={() => {
+          designPaused.current = false;
+          handleMouseLeave();
+        }}
+        onMouseMove={(e) => handleMouseMove(e, designRef)}
       >
         {[...designPhotos, ...designPhotos].map((img, i) => (
-          <div
-            key={i}
-            style={{
-              minWidth: designW, height: designH,
-              borderRadius: '12px', overflow: 'hidden', flex: '0 0 auto',
-              border: '0.5px solid rgba(255,255,255,0.07)',
-            }}
-          >
+          <div key={i} style={{ minWidth: designW, height: designH }}>
             <img
               src={img}
-              alt={`Design ${(i % designPhotos.length) + 1}`}
-              loading="lazy"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              onClick={() => setSelectedImage(img)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }}
             />
           </div>
         ))}
       </div>
 
-      {/* ══════════ PHOTOGRAPHIE ══════════ */}
+      {/* ===== PHOTOS ===== */}
       <h2 style={{ ...h2, marginTop: sectionGap }}>Photographie</h2>
 
       <div
         ref={scrollRef}
         style={carouselWrap}
-        onMouseEnter={() => (photoPaused.current = true)}
-        onMouseLeave={() => (photoPaused.current = false)}
-        onTouchStart={() => (photoPaused.current = true)}
-        onTouchEnd={() => setTimeout(() => (photoPaused.current = false), 2000)}
+        onMouseDown={(e) => handleMouseDown(e, scrollRef)}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={(e) => handleMouseMove(e, scrollRef)}
       >
         {[...photos, ...photos].map((img, i) => (
-          <div
-            key={i}
-            style={{
-              minWidth: photoW, height: photoH,
-              borderRadius: '12px', overflow: 'hidden', flex: '0 0 auto',
-              border: '0.5px solid rgba(255,255,255,0.07)',
-            }}
-          >
+          <div key={i} style={{ minWidth: photoW, height: photoH }}>
             <img
               src={img}
-              alt={`Photo ${(i % photos.length) + 1}`}
-              loading="lazy"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              onClick={() => setSelectedImage(img)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }}
             />
           </div>
         ))}
