@@ -95,3 +95,15 @@ body {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+@media (max-width: 700px) {
+  .contact-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 36px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .contact-fields {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

@@ -23,6 +23,28 @@ const designPhotos = [
 // 🎬 PROJETS
 const projects = [
   {
+  id: 13,
+  title: "L'IA va remplacer les Agences Web ?",
+  category: 'Vidéo',
+  desc: 'Film et montage vidéo.',
+  youtube: 'https://www.youtube.com/embed/dX-BegA3ezQ',
+  },
+
+    {
+    id: 12,
+    title: 'Elle a travaillé chez Apple, Google, Amazon et Microsoft',
+    category: 'Vidéo',
+    desc: 'Film corporate tournage et montage.',
+    youtube: 'https://www.youtube.com/embed/Tu17cquGfSc',
+  },
+  {
+  id: 14,
+  title: 'Xel ak Jëf',
+  category: 'Motion Design',
+  desc: 'Film et montage vidéo.',
+  youtube: 'https://www.youtube.com/embed/2vscJjivWk0',
+},
+  {
     id: 1,
     title: 'Projet Motion kirene avec orange',
     category: 'Motion Design',
@@ -99,6 +121,7 @@ const projects = [
     desc: 'Film corporate tournage et montage.',
     youtube: 'https://www.youtube.com/embed/3uzhgcpPKsI',
   },
+  
 ];
 
 // ─── breakpoint ─────────────────────────
